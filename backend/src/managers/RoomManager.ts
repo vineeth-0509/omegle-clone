@@ -22,19 +22,35 @@ export class RoomManager {
     user1?.socket.emit("send-offer", {
       roomId,
     });
+    user2?.socket.emit("offer", {roomId});
+    return roomId;
   }
 
-  onOffer(roomId: string, sdp: string) {
-    const user2 = this.rooms.get(roomId)?.user2;
-    user2?.socket.emit("offer", {
+  //here it is coming the user1 to the server and the server is sending the offer with the sdp to the user2 based on the roomId
+  onOffer(roomId: string, sdp: string, senderSocketid: string) {
+    const room = this.rooms.get(roomId);
+    if (!room) {
+      return;
+    }
+    const receivingUser =
+      room.user1.socket.id === senderSocketid ? room.user2 : room.user1;
+    receivingUser?.socket.emit("offer", {
       sdp,
+      roomId,
     });
   }
 
-  onAnswer(roomId: string, sdp: string) {
-    const user1 = this.rooms.get(roomId)?.user1;
-    user1?.socket.emit("offer", {
+  //user2 sets the user1 sdp and user2 returns the sdp of the user2 as answer to the server and server forwards it to the user1
+  onAnswer(roomId: string, sdp: string, senderSocketId: string) {
+    const room = this.rooms.get(roomId);
+    if (!room) {
+      return;
+    }
+    const receivingUser =
+      room.user1.socket.id === senderSocketId ? room.user1 : room.user2;
+    receivingUser?.socket.emit("answer", {
       sdp,
+      roomId,
     });
   }
   generate() {
