@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 type Props = {};
 
 const Landing = (props: Props) => {
+
   const [name, setName] = useState("");
-  const [localAudioTrack, setLocalAudioTrack] = useState<MediaStreamTrack | null>(null);
-  
+ 
   return (
     <div>
       <input

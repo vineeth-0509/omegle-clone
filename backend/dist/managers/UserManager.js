@@ -5,24 +5,12 @@ const RoomManager_1 = require("./RoomManager");
 let GLOBAL_RANDOM_ID = 1;
 class UserManager {
     constructor() {
-        this.clearQueue = () => {
-            if (this.queue.length < 2) {
-                return;
-            }
-            const user1 = this.users.find((x) => x.socket.id === this.queue.pop());
-            const user2 = this.users.find((x) => x.socket.id === this.queue.pop());
-            if (!user1 || !user2) {
-                return;
-            }
-            const room = this.roomManager.createRoom(user1, user2);
-            this.clearQueue();
-        };
         this.initHandler = (socket) => {
             socket.on("offer", ({ sdp, roomId }) => {
-                this.roomManager.onOffer(roomId, sdp);
+                this.roomManager.onOffer(roomId, sdp, socket.id);
             });
             socket.on("answer", ({ sdp, roomId }) => {
-                this.roomManager.onAnswer(roomId, sdp);
+                this.roomManager.onAnswer(roomId, sdp, socket.id);
             });
         };
         this.users = [];
@@ -35,17 +23,31 @@ class UserManager {
             socket,
         });
         this.queue.push(socket.id);
-        socket.send("lobby");
+        socket.emit("lobby");
         this.clearQueue();
         this.initHandler(socket);
     }
     removeUser(socketId) {
-        const user = this.users.find(x => x.socket.id === socketId);
         this.users = this.users.filter((x) => x.socket.id !== socketId);
-        this.queue = this.queue.filter((x) => x === socketId);
+        this.queue = this.queue.filter((x) => x !== socketId);
     }
-    getUser(socketId) {
-        return this.users.find(x => x.socket.id === socketId);
+    clearQueue() {
+        console.log("Inside clear queues");
+        console.log(this.queue.length);
+        if (this.queue.length < 2) {
+            return;
+        }
+        const id1 = this.queue.pop();
+        const id2 = this.queue.pop();
+        console.log("id is " + id1 + " " + id2);
+        const user1 = this.users.find((x) => x.socket.id === id1);
+        const user2 = this.users.find((x) => x.socket.id === id2);
+        if (!user1 || !user2) {
+            return;
+        }
+        console.log("creating room");
+        const room = this.roomManager.createRoom(user1, user2);
+        this.clearQueue();
     }
 }
 exports.UserManager = UserManager;
