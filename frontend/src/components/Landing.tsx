@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { Room } from "./Room";
 
 type Props = {};
 
@@ -32,8 +33,9 @@ const Landing = (props: Props) => {
     getCam();
   }, [videoRef]);
 
-  return (
-    <div>
+  if(!joined){
+    return(
+<div>
       <video autoPlay ref={videoRef} height={400} width={400}>
         {" "}
       </video>
@@ -44,8 +46,15 @@ const Landing = (props: Props) => {
         }}
       />
 
-      <Link to={`/room/?names=${name}`}>Join</Link>
+      <button onClick={()=>{
+        setJoined(true)
+      }}>Join</button>
     </div>
+    )
+  }
+
+  return (
+    <Room name={name} localAudioTrack={localAudioTrack} localMediaTrack={localMediaTrack} />
   );
 };
 
