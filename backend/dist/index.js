@@ -20,7 +20,8 @@ io.on("connection", (socket) => {
     console.log(`a user connected: ${name}`);
     userManager.addUser(name || "vineeth", socket);
     socket.on("disconnect", () => {
-        console.log(`user disconnected: (${socket.id})`);
+        var _a;
+        console.log("disconnected from :", socket.id, (_a = socket.data) === null || _a === void 0 ? void 0 : _a.username);
         userManager.removeUser(socket.id);
     });
 });

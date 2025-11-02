@@ -20,7 +20,7 @@ io.on("connection", (socket: Socket) => {
   console.log(`a user connected: ${name}`);
   userManager.addUser(name || "vineeth", socket);
   socket.on("disconnect", () => {
-    console.log(`user disconnected: (${socket.id})`);
+  console.log("disconnected from :",socket.id, socket.data?.username);
     userManager.removeUser(socket.id);
   });
 });

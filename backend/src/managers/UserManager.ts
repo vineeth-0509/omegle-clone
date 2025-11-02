@@ -1,8 +1,6 @@
 import { Socket } from "socket.io";
 import { RoomManager } from "./RoomManager";
 
-let GLOBAL_RANDOM_ID = 1;
-
 export interface User {
   name: string;
   socket: Socket;
@@ -27,6 +25,9 @@ export class UserManager {
     this.initHandler(socket);
   }
   removeUser(socketId: string) {
+    //do the delete room logic later, anytime a user leaves the room
+    //like one users exists from the room, we have to delete the room.
+    // deleting the users from the room and deleting the room.
     this.users = this.users.filter((x) => x.socket.id !== socketId);
     this.queue = this.queue.filter((x) => x !== socketId);
   }
@@ -36,6 +37,7 @@ export class UserManager {
     if (this.queue.length < 2) {
       return;
     }
+    console.log(this.users);
     const id1 = this.queue.pop();
     const id2 = this.queue.pop();
     console.log("id is " + id1 + " " + id2);
@@ -50,11 +52,35 @@ export class UserManager {
   }
 
   initHandler = (socket: Socket) => {
-    socket.on("offer", ({ sdp, roomId }: { sdp: string; roomId: string }) => {
-      this.roomManager.onOffer(roomId, sdp, socket.id);
-    });
-    socket.on("answer", ({ sdp, roomId }: { sdp: string; roomId: string }) => {
-      this.roomManager.onAnswer(roomId, sdp, socket.id);
-    });
+    socket.on(
+      "offer",
+      ({
+        sdp,
+        roomId,
+        senderSocketId,
+      }: {
+        sdp: string;
+        roomId: string;
+        senderSocketId: string;
+      }) => {
+        console.log("offer received from: ", roomId);
+        this.roomManager.onOffer(roomId, sdp, senderSocketId);
+      }
+    );
+    socket.on(
+      "answer",
+      ({
+        sdp,
+        roomId,
+        senderSocketId,
+      }: {
+        sdp: string;
+        roomId: string;
+        senderSocketId: string;
+      }) => {
+        console.log("answer received");
+        this.roomManager.onAnswer(roomId, sdp, senderSocketId);
+      }
+    );
   };
 }

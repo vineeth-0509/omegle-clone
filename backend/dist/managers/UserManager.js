@@ -2,15 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserManager = void 0;
 const RoomManager_1 = require("./RoomManager");
-let GLOBAL_RANDOM_ID = 1;
 class UserManager {
     constructor() {
         this.initHandler = (socket) => {
-            socket.on("offer", ({ sdp, roomId }) => {
-                this.roomManager.onOffer(roomId, sdp, socket.id);
+            socket.on("offer", ({ sdp, roomId, senderSocketId, }) => {
+                console.log("offer received from: ", roomId);
+                this.roomManager.onOffer(roomId, sdp, senderSocketId);
             });
-            socket.on("answer", ({ sdp, roomId }) => {
-                this.roomManager.onAnswer(roomId, sdp, socket.id);
+            socket.on("answer", ({ sdp, roomId, senderSocketId, }) => {
+                console.log("answer received");
+                this.roomManager.onAnswer(roomId, sdp, senderSocketId);
             });
         };
         this.users = [];
@@ -28,6 +29,9 @@ class UserManager {
         this.initHandler(socket);
     }
     removeUser(socketId) {
+        //do the delete room logic later, anytime a user leaves the room
+        //like one users exists from the room, we have to delete the room.
+        // deleting the users from the room and deleting the room.
         this.users = this.users.filter((x) => x.socket.id !== socketId);
         this.queue = this.queue.filter((x) => x !== socketId);
     }
@@ -37,6 +41,7 @@ class UserManager {
         if (this.queue.length < 2) {
             return;
         }
+        console.log(this.users);
         const id1 = this.queue.pop();
         const id2 = this.queue.pop();
         console.log("id is " + id1 + " " + id2);
