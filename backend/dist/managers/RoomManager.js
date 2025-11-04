@@ -243,7 +243,7 @@ class RoomManager {
         if (!receiver) {
             console.warn("receiver not found for the chat");
         }
-        receiver === null || receiver === void 0 ? void 0 : receiver.socket.emit("chat-message", { message });
+        receiver === null || receiver === void 0 ? void 0 : receiver.socket.emit("receive-message", { message });
     }
     createRoom(user1, user2) {
         const roomId = this.generate().toString();
@@ -258,24 +258,29 @@ class RoomManager {
         return roomId;
     }
     onOffer(roomId, sdp, senderSocketId) {
+        console.log(`forwarding offer from ${senderSocketId} in room ${roomId}`);
         const room = this.rooms.get(roomId);
         if (!room) {
             console.log("room not found for offer", roomId);
             return;
         }
         const receiverUser = room.user1.socket.id === senderSocketId ? room.user2 : room.user1;
+        console.log(`sending offer to ${receiverUser.socket.id} `);
         receiverUser.socket.emit("offer", { sdp, roomId });
     }
     onAnswer(roomId, sdp, senderSocketId) {
+        console.log(`forwarding answer from ${senderSocketId} of room ${roomId}`);
         const room = this.rooms.get(roomId);
         if (!room) {
             console.log("room not found for the answer:", roomId);
             return;
         }
         const receivingUser = room.user1.socket.id === senderSocketId ? room.user2 : room.user1;
+        console.log(`sending answer to ${receivingUser.socket.id}`);
         receivingUser.socket.emit("answer", { sdp, roomId });
     }
     onIceCandidate(roomId, senderSocketId, candidate) {
+        console.log(`forwarding ice candidates in room ${roomId}`);
         const room = this.rooms.get(roomId);
         if (!room) {
             console.warn(`room ${roomId} not found for ice candidate`);

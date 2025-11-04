@@ -71,3 +71,20 @@ export default defineConfig([
   },
 ])
 ```
+
+
+#enable-webrtc-hide-local-ips-with-mdns - Set to "Disabled"
+
+#enable-webrtc-allow-input-volume-adjustment - Set to "Enabled"
+
+#enable-webrtc-apm-downmix-capture-audio-method - Set to "Enabled"
+
+#webrtc-pqc-for-dtls - Set to "Enabled"
+
+#ignore-gpu-blocklist - Set to "Enabled"
+
+Overrides GPU blocklist for better video performance
+
+#enable-accelerated-2d-canvas - Set to "Enabled"
+
+#enable-gpu-rasterization - Set to "Enabled"

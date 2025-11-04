@@ -142,7 +142,7 @@ class UserManager {
                 this.handleNextUser(socket.id, roomId);
             });
             socket.on("chat-message", ({ roomId, message, senderSocketId }) => {
-                this.roomManager.chatMessage(roomId, message, senderSocketId);
+                this.roomManager.chatMessage(roomId, senderSocketId, message);
             });
             socket.on("disconnect", () => {
                 console.log(`user disconnected: ${socket.id}`);
@@ -162,9 +162,10 @@ class UserManager {
     }
     removeUser(socketId) {
         this.users = this.users.filter((x) => x.socket.id !== socketId);
-        this.queue = this.queue.filter((x) => x !== socketId);
+        this.queue = this.queue.filter((id) => id !== socketId);
         const room = this.roomManager.findRoomBySocketId(socketId);
         if (room) {
+            console.log(`user ${socketId} was in room ${room.id} cleanup`);
             const otherUser = room.user1.socket.id === socketId ? room.user2 : room.user1;
             this.roomManager.deleteRoomById(room);
             if (otherUser) {

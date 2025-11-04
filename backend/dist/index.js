@@ -18,7 +18,7 @@ const userManager = new UserManager_1.UserManager();
 io.on("connection", (socket) => {
     const name = socket.handshake.query.name;
     console.log(`a user connected: ${name}`);
-    userManager.addUser(name || "vineeth", socket);
+    userManager.addUser(name || "anonymous", socket);
     socket.on("disconnect", () => {
         var _a;
         console.log("disconnected from :", socket.id, (_a = socket.data) === null || _a === void 0 ? void 0 : _a.username);
